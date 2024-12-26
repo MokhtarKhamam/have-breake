@@ -14,6 +14,7 @@ export interface productCartProps {
 }
 interface initialStateType {
   cart: productCartProps[];
+  totalAmount: number;
 }
 
 const loadCartFromLocalStorage = (): productCartProps[] => {
@@ -24,15 +25,22 @@ const loadCartFromLocalStorage = (): productCartProps[] => {
   return [];
 };
 
-
 const saveCartToLocalStorage = (cart: productCartProps[]) => {
   if (typeof window !== "undefined") {
     localStorage.setItem("cart", JSON.stringify(cart));
   }
 };
 
+const calculateTotalAmount = (cart: productCartProps[]): number => {
+  return cart.reduce(
+    (total, product) => total + product.price * product.quantity,
+    0
+  );
+};
+
 const initialState: initialStateType = {
   cart: loadCartFromLocalStorage(),
+  totalAmount: calculateTotalAmount(loadCartFromLocalStorage()), // Calculate initial total
 };
 
 export const globalSlice = createSlice({
@@ -41,6 +49,7 @@ export const globalSlice = createSlice({
   reducers: {
     addProductToCart: (state, action: PayloadAction<productCartProps>) => {
       state.cart.push(action.payload);
+      state.totalAmount = calculateTotalAmount(state.cart); // Update total amount
       saveCartToLocalStorage(state.cart); // Update local storage
     },
 
@@ -48,6 +57,7 @@ export const globalSlice = createSlice({
       state.cart = state.cart.filter(
         (product) => product.id !== action.payload
       );
+      state.totalAmount = calculateTotalAmount(state.cart); // Update total amount
       saveCartToLocalStorage(state.cart); // Update local storage
     },
 
@@ -57,6 +67,8 @@ export const globalSlice = createSlice({
       );
       if (product) {
         product.quantity += 1; // Increase quantity by 1
+        state.totalAmount = calculateTotalAmount(state.cart); // Update total amount
+
         saveCartToLocalStorage(state.cart); // Update local storage
       }
     },
@@ -67,6 +79,8 @@ export const globalSlice = createSlice({
       );
       if (product && product.quantity > 1) {
         product.quantity -= 1; // Decrease quantity by 1 if greater than 1
+        state.totalAmount = calculateTotalAmount(state.cart); // Update total amount
+
         saveCartToLocalStorage(state.cart); // Update local storage
       }
     },

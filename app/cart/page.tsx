@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { useDispatch } from "react-redux";
 import { removeProductFromCart } from "@/state";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const CartPage = () => {
+  const router = useRouter()
   const dispatch = useDispatch();
   const cartProduct = useAppSelector((state) => state.global.cart);
   console.log(cartProduct)  
@@ -35,7 +37,7 @@ const CartPage = () => {
       </div>
       {cartProduct.length && (
         <div className="flex justify-between items-center py-8 ">
-          <Button size="lg">Checkout</Button>
+          <Button size="lg" onClick={() => router.push("/payment")}>Checkout</Button>
           <Button
             onClick={() => {
               cartProduct.map((product) => {

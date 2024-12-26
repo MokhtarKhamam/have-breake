@@ -7,6 +7,7 @@ import {
 } from "@stripe/react-stripe-js";
 import convertToSubcurrency from "@/lib/convertToSubcurrency";
 import { baseURL } from "@/config/constant";
+import { useAppSelector } from "@/app/redux";
 
 const CheckoutPage = ({ amount }: { amount: number }) => {
   const stripe = useStripe();
@@ -14,6 +15,8 @@ const CheckoutPage = ({ amount }: { amount: number }) => {
   const [errorMessage, setErrorMessage] = useState<string>();
   const [clientSecret, setClientSecret] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const cartProduct = useAppSelector((state) => state.global.cart);
 
   useEffect(() => {
     fetch("/api/create-payment-intent", {
@@ -27,6 +30,25 @@ const CheckoutPage = ({ amount }: { amount: number }) => {
       .then((data) => setClientSecret(data.clientSecret));
   }, [amount]);
 
+  const submitCart = async () => {
+    const data = cartProduct.map((product) => ({
+      productId: product.id,
+      quantity: product.quantity,
+    }));
+    const response = await fetch("/api/cart/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to submit cart");
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLoading(true);
@@ -35,29 +57,33 @@ const CheckoutPage = ({ amount }: { amount: number }) => {
       return;
     }
 
-    const { error: submitError } = await elements.submit();
+    try {
+      await submitCart();
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        setErrorMessage(submitError.message);
+        setLoading(false);
+        return;
+      }
+      const { error } = await stripe.confirmPayment({
+        elements,
+        clientSecret,
+        confirmParams: {
+          return_url: `${baseURL}/payment-success?amount=${amount}`,
+        },
+      });
 
-    if (submitError) {
-      setErrorMessage(submitError.message);
-      setLoading(false);
-      return;
-    }
-
-    const { error } = await stripe.confirmPayment({
-      elements,
-      clientSecret,
-      confirmParams: {
-        return_url: `${baseURL}/payment-success?amount=${amount}`,
-      },
-    });
-
-    if (error) {
-      // This point is only reached if there's an immediate error when
-      // confirming the payment. Show the error to your customer (for example, payment details incomplete)
-      setErrorMessage(error.message);
-    } else {
-      // The payment UI automatically closes with a success animation.
-      // Your customer is redirected to your `return_url`.
+      if (error) {
+        // This point is only reached if there's an immediate error when
+        // confirming the payment. Show the error to your customer (for example, payment details incomplete)
+        setErrorMessage(error.message);
+      } else {
+        // The payment UI automatically closes with a success animation.
+        // Your customer is redirected to your `return_url`.
+      }
+    } catch (error) {
+      setErrorMessage("somthing went wrong");
+      console.log(error);
     }
 
     setLoading(false);

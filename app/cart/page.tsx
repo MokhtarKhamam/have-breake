@@ -9,10 +9,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 const CartPage = () => {
-  const router = useRouter()
+  const router = useRouter();
   const dispatch = useDispatch();
   const cartProduct = useAppSelector((state) => state.global.cart);
-  console.log(cartProduct)  
+
 
   if (!cartProduct.length) {
     return (
@@ -37,7 +37,9 @@ const CartPage = () => {
       </div>
       {cartProduct.length && (
         <div className="flex justify-between items-center py-8 ">
-          <Button size="lg" onClick={() => router.push("/payment")}>Checkout</Button>
+          <Button size="lg" onClick={() => router.push("/payment")}>
+            Checkout
+          </Button>
           <Button
             onClick={() => {
               cartProduct.map((product) => {

@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import axios from "axios";
 // import { revalidatePath } from "next/cache";
-import { baseURL } from "@/config/constant";
+// import { baseURL } from "@/config/constant";
 import { useSession } from "next-auth/react";
 
 const AddProduct = () => {
@@ -38,7 +38,7 @@ const AddProduct = () => {
     // console.log(values);
     axios
       .post(
-        `${baseURL}/product/create`,
+        `/api/product/create`,
         {
           ...values,
           image: "https://test/images/10",

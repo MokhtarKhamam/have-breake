@@ -6,7 +6,7 @@ import {
   PaymentElement,
 } from "@stripe/react-stripe-js";
 import convertToSubcurrency from "@/lib/convertToSubcurrency";
-import { baseURL } from "@/config/constant";
+// import { baseURL } from "@/config/constant";
 import { useAppSelector } from "@/app/redux";
 
 const CheckoutPage = ({ amount }: { amount: number }) => {
@@ -69,7 +69,7 @@ const CheckoutPage = ({ amount }: { amount: number }) => {
         elements,
         clientSecret,
         confirmParams: {
-          return_url: `${baseURL}/payment-success?amount=${amount}`,
+          return_url: `/api/payment-success?amount=${amount}`,
         },
       });
 

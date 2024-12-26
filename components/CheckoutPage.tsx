@@ -19,7 +19,7 @@ const CheckoutPage = ({ amount }: { amount: number }) => {
   const cartProduct = useAppSelector((state) => state.global.cart);
 
   useEffect(() => {
-    fetch("/api/create-payment-intent", {
+    fetch("api/create-payment-intent", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -35,7 +35,7 @@ const CheckoutPage = ({ amount }: { amount: number }) => {
       productId: product.id,
       quantity: product.quantity,
     }));
-    const response = await fetch("/api/cart/create", {
+    const response = await fetch("api/cart/create", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -69,7 +69,7 @@ const CheckoutPage = ({ amount }: { amount: number }) => {
         elements,
         clientSecret,
         confirmParams: {
-          return_url: `/api/payment-success?amount=${amount}`,
+          return_url: `api/payment-success?amount=${amount}`,
         },
       });
 

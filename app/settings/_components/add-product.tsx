@@ -38,7 +38,7 @@ const AddProduct = () => {
     // console.log(values);
     axios
       .post(
-        `/api/product/create`,
+        `api/product/create`,
         {
           ...values,
           image: "https://test/images/10",

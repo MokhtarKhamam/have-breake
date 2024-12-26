@@ -1,10 +1,11 @@
 import ProductCard, { productProps } from "@/components/ProductCard";
 import React from "react";
 import AddProduct from "./_components/add-product";
+import { baseURL } from "@/config/constant";
 // import { baseURL } from "@/config/constant";
 
 const Setting = async () => {
-  const data = await fetch(`api/product`, {next: {tags: ["products"]}});
+  const data = await fetch(`${baseURL}/api/product`, {next: {tags: ["products"]}});
   const jsonData = await data.json();
 
   const products = jsonData || [];

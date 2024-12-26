@@ -1,9 +1,9 @@
 import React from "react";
 import ProductCard, { productProps } from "../ProductCard";
-// import { baseURL } from "@/config/constant";
+import { baseURL } from "@/config/constant";
 
 const Products = async () => {
-  const data = await fetch(`api/product`);
+  const data = await fetch(`${baseURL}/api/product`);
   const jsonData = await data.json();
 
   const products = jsonData || [];

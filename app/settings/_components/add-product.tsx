@@ -20,6 +20,7 @@ import axios from "axios";
 // import { revalidatePath } from "next/cache";
 // import { baseURL } from "@/config/constant";
 import { useSession } from "next-auth/react";
+import { baseURL } from "@/config/constant";
 
 const AddProduct = () => {
   const session = useSession();
@@ -38,7 +39,7 @@ const AddProduct = () => {
     // console.log(values);
     axios
       .post(
-        `api/product/create`,
+        `${baseURL}/api/product/create`,
         {
           ...values,
           image: "https://test/images/10",

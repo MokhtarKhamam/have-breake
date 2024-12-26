@@ -17,13 +17,12 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import axios from "axios";
-import { revalidatePath } from "next/cache";
+// import { revalidatePath } from "next/cache";
 import { baseURL } from "@/config/constant";
 import { useSession } from "next-auth/react";
 
 const AddProduct = () => {
   const session = useSession();
-  console.log(session);
   const [open, setOpen] = useState(false);
 
   const form = useForm<z.infer<typeof addProductSchema>>({
@@ -52,7 +51,7 @@ const AddProduct = () => {
         }
       )
       .then(() => {
-        revalidatePath("/");
+        // revalidatePath("/");
         setOpen(false);
       })
       .catch((error) => console.log(error));

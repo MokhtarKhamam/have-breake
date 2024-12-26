@@ -27,7 +27,6 @@ const AuthButton = ({ className, ...props }: AuthButtonProps) => {
 
   const session = useSession();
 
-  console.log("session", session);
 
   if (session?.data?.user) {
     return (

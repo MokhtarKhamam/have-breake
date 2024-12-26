@@ -56,10 +56,26 @@ model Product {
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
   image     String?
+  carts     Cart[]   @relation("ProductCarts") 
 
+  // Uncomment if needed
   // profile   Profile? @relation(fields: [profileId], references: [id])
   // profileId String?  @unique // Add @unique here
 
   // @@map("products")
+
+  Cart Cart[] @relation("CartProduct")
 }
 
+model Cart {
+  id        String   @id @default(cuid())
+  productId String
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation("CartProduct", fields: [productId], references: [id], onDelete: Cascade) // Updated relation name
+
+  @@map("carts")
+  Product Product[] @relation("ProductCarts")
+}

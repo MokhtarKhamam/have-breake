@@ -16,7 +16,6 @@ declare module "next-auth" {
 export const { handlers, signIn, signOut, auth } = NextAuth({
   callbacks: {
     async session({ token, session }) {
-      console.log("the session", token);
       if (typeof token.token === 'string') {
         session.user.token = token.token;
       }

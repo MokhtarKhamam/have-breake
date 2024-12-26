@@ -1,5 +1,8 @@
-"use client";
-import React from "react";
+("");
+import { useAppDispatch } from "@/app/redux";
+import { PlaceholderImage } from "@/components/placeholder-image";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,47 +10,31 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./ui/card";
-import Link from "next/link";
-import { AspectRatio } from "@radix-ui/react-aspect-ratio";
-import Image from "next/image";
-import { PlaceholderImage } from "./placeholder-image";
+} from "@/components/ui/card";
 import { cn, formatPrice } from "@/lib/utils";
-import { Button, buttonVariants } from "./ui/button";
-import { EyeOpenIcon } from "@radix-ui/react-icons";
-import { useAppDispatch, useAppSelector } from "@/app/redux";
-import { addProductToCart, productCartProps } from "@/state";
+import {
+  decreaseProductQuantity,
+  increaseProductQuantity,
+  productCartProps,
+  removeProductFromCart,
+} from "@/state";
+import Image from "next/image";
+import Link from "next/link";
+import React from "react";
 
-export interface productProps {
-  id: string;
-  authorId: string;
-  title: string;
-  price: number;
-  unit: string;
-  createdAt: string;
-  updatedAt: string;
-  image: string;
-}
-
-const ProductCard = ({
+const ProductCardCart = ({
   product,
   className,
 }: {
-  product: productProps;
+  product: productCartProps;
   className?: string;
 }) => {
   const dispatch = useAppDispatch();
-  const cart = useAppSelector((state) => state.global.cart); // Select cart from the Redux state
-
-  const isProductInCart = cart.some(
-    (item: productCartProps) => item.id === product.id
-  );
-
   return (
     <Card
       key={product.id}
       className={cn(
-        "size-full overflow-hidden rounded-lg col-span-6 md:col-span-4 lg:col-span-3",
+        "size-full overflow-hidden rounded-lg col-span-4 md:col-span-3",
         className
       )}
     >
@@ -71,39 +58,43 @@ const ProductCard = ({
         <span className="sr-only">{product.title}</span>
       </Link>
       <Link href={`/product/${product.id}`} tabIndex={-1}>
-        <CardContent className="space-y-1.5 p-4">
+        <CardContent className="space-y-1.5 p-4 flex justify-between items-center">
           <CardTitle className="line-clamp-1">{product.title}</CardTitle>
           <CardDescription className="line-clamp-1">
             {formatPrice(product.price)}
           </CardDescription>
         </CardContent>
+        <CardContent className="px-3 py-0">
+          Quantity: {product.quantity}
+        </CardContent>
       </Link>
       <CardFooter className="p-4">
         <div className="flex w-full items-center space-x-2">
-          {/* <Button
-            aria-label="Add to cart"
-            size="sm"
-            className="h-8 w-full rounded-sm"
-            onClick={() =>
-              dispatch(addProductToCart({ ...product, quantity: 1 }))
-            }
-          >
-            Add to cart
-          </Button> */}
           <Button
-            aria-label={isProductInCart ? "Already in cart" : "Add to cart"}
+            aria-label="Remove"
             size="sm"
             className="h-8 w-full rounded-sm"
             onClick={() => {
-              if (!isProductInCart) {
-                dispatch(addProductToCart({ ...product, quantity: 1 }));
-              }
+              dispatch(removeProductFromCart(product.id));
             }}
-            disabled={isProductInCart} // Disable button if product is in cart
           >
-            {isProductInCart ? "Already in cart" : "Add to cart"}
+            Remove
           </Button>
-          <Link
+          <div className="flex justify-center items-center gap-3">
+            <Button
+              variant="secondary"
+              onClick={() => dispatch(increaseProductQuantity(product.id))}
+            >
+              +
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => dispatch(decreaseProductQuantity(product.id))}
+            >
+              -
+            </Button>
+          </div>
+          {/* <Link
             href={`/preview/product/${product.id}`}
             title="Preview"
             className={cn(
@@ -116,11 +107,11 @@ const ProductCard = ({
           >
             <EyeOpenIcon className="size-4" aria-hidden="true" />
             <span className="sr-only">Preview</span>
-          </Link>
+          </Link> */}
         </div>
       </CardFooter>
     </Card>
   );
 };
 
-export default ProductCard;
+export default ProductCardCart;
